@@ -1,7 +1,7 @@
 package andrewafony.factsaboutnumbers.com.main.presentation
 
 import andrewafony.factsaboutnumbers.com.R
-import andrewafony.factsaboutnumbers.com.main.numbers.presentation.NumbersFragment
+import andrewafony.factsaboutnumbers.com.numbers.presentation.NumbersFragment
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 

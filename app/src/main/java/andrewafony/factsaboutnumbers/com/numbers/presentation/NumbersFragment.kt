@@ -1,4 +1,4 @@
-package andrewafony.factsaboutnumbers.com.main.numbers.presentation
+package andrewafony.factsaboutnumbers.com.numbers.presentation
 
 import andrewafony.factsaboutnumbers.com.R
 import android.os.Bundle

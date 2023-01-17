@@ -1,5 +1,12 @@
 package andrewafony.factsaboutnumbers.com.numbers
 
+import andrewafony.factsaboutnumbers.com.numbers.domain.NumberFact
+import andrewafony.factsaboutnumbers.com.numbers.domain.NumberUiMapper
+import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
+import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersResult
+import andrewafony.factsaboutnumbers.com.numbers.presentation.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -13,25 +20,23 @@ class NumbersViewModelTest {
         val communication = TestNumbersCommunication()
         val interactor = TestNumbersInteractor()
 
-        val viewModel = NumbersViewModel(communication, interactor)
+        val viewModel = NumbersViewModel(communication, interactor, NumbersResultMapper(communication, NumberUiMapper()))
         interactor.changeExpectedResult(NumbersResult.Success())
 
         viewModel.init(isFirstRun = true)
 
-        assertEquals(1, communication.progressCalledList.size) // show progress bar count
         assertEquals(true, communication.progressCalledList[0]) // progress bar is shown
-
         assertEquals(2, communication.progressCalledList.size)
         assertEquals(false, communication.progressCalledList[1])
 
-        assertEquals(1, communication.stateCalledList.size) // ??????????
-        assertEquals(UiState.Success(emptyList<NumberFact>()), communication.stateCalledList[0])
+        assertEquals(1, communication.stateCalledList.size)
+        assertEquals(UiState.Success(), communication.stateCalledList[0])
 
         assertEquals(0, communication.numbersList.size)
         assertEquals(0, communication.timesShowList)
 
-        interactor.changeExpectedResult(NumbersResult.Failure())
-        viewModel.fetchRandomNumberData()
+        interactor.changeExpectedResult(NumbersResult.Failure(""))
+        viewModel.fetchRandomNumberFact()
 
         assertEquals(3, communication.progressCalledList.size)
         assertEquals(true, communication.progressCalledList[2])
@@ -58,9 +63,9 @@ class NumbersViewModelTest {
         val communication = TestNumbersCommunication()
         val interactor = TestNumbersInteractor()
 
-        val viewModel = NumbersViewModel(communication, interactor)
+        val viewModel = NumbersViewModel(communication, interactor, NumbersResultMapper(communication, NumberUiMapper()))
 
-        viewModel.fetchFact("")
+        viewModel.fetchNumberFact("")
 
         assertEquals(0, interactor.fetchAboutNumberCalledList.size)
 
@@ -77,10 +82,10 @@ class NumbersViewModelTest {
         val communication = TestNumbersCommunication()
         val interactor = TestNumbersInteractor()
 
-        val viewModel = NumbersViewModel(communication, interactor)
+        val viewModel = NumbersViewModel(communication, interactor, NumbersResultMapper(communication, NumberUiMapper()))
 
         interactor.changeExpectedResult(NumbersResult.Success(listOf(NumberFact("45", "fact about 45"))))
-        viewModel.fetchFact("45")
+        viewModel.fetchNumberFact("45")
 
         assertEquals(1, communication.progressCalledList.size) // show progress bar count
         assertEquals(true, communication.progressCalledList[0]) // progress bar is shown
@@ -99,25 +104,31 @@ class NumbersViewModelTest {
     }
 }
 
-private class TestNumbersCommunication : NumbersCommunicaiton {
+private class TestNumbersCommunication : NumbersCommunications {
 
     val progressCalledList = mutableListOf<Boolean>()
-    val stateCalledList = mutableListOf<Boolean>()
+    val stateCalledList = mutableListOf<UiState>()
     var timesShowList = 0
-    val numbersList = mutableListOf<NumberUI>()
+    val numbersList = mutableListOf<NumberUi>()
 
     override fun showProgress(show: Boolean) {
         progressCalledList.add(show)
     }
 
-    override fun showState(state: UiState) {
-        stateCalledList.add(state)
+    override fun showState(uiState: UiState) {
+        stateCalledList.add(uiState)
     }
 
     override fun showList(list: List<NumberUi>) {
         timesShowList++
         numbersList.addAll(list)
     }
+
+    override fun observeProgress(owner: LifecycleOwner, observer: Observer<Boolean>) = Unit
+
+    override fun observeState(owner: LifecycleOwner, observer: Observer<UiState>) = Unit
+
+    override fun observeList(owner: LifecycleOwner, observer: Observer<List<NumberUi>>) = Unit
 }
 
 private class TestNumbersInteractor : NumbersInteractor {
