@@ -11,14 +11,11 @@ class NumbersResultMapper(
     override fun map(list: List<NumberFact>, errorMessage: String) {
         communications.showState(
             if (errorMessage.isEmpty()) {
-                val numberList = list.map { it.map(mapper) }
-                if (numberList.isNotEmpty())
-                    communications.showList(numberList)
+                if (list.isNotEmpty())
+                    communications.showList(list.map { it.map(mapper) })
                 UiState.Success()
             } else
                 UiState.Error(errorMessage)
         )
-
-
     }
 }

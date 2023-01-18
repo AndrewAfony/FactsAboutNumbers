@@ -1,17 +1,18 @@
 package andrewafony.factsaboutnumbers.com.numbers.presentation
 
+import andrewafony.factsaboutnumbers.com.R
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersResult
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
 class NumbersViewModel(
+    private val dispatchers: DispatchersList,
     private val communications: NumbersCommunications,
     private val interactor: NumbersInteractor,
-    private val numbersResultMapper: NumbersResultMapper
-) : ViewModel(), ObserveNumbers, FetchNumbers  {
+    private val numbersResultMapper: NumbersResultMapper,
+    private val manageResources: ManageResources,
+) : ViewModel(), ObserveNumbers, FetchNumbers {
 
 
     override fun observeProgress(owner: LifecycleOwner, observer: Observer<Boolean>) {
@@ -29,7 +30,7 @@ class NumbersViewModel(
     override fun init(isFirstRun: Boolean) {
         if (isFirstRun) {
             communications.showProgress(true)
-            viewModelScope.launch {
+            viewModelScope.launch(dispatchers.io()) {
                 val result = interactor.init()
                 communications.showProgress(false)
                 result.map(numbersResultMapper)
@@ -38,11 +39,25 @@ class NumbersViewModel(
     }
 
     override fun fetchRandomNumberFact() {
-        TODO("Not yet implemented")
+        communications.showProgress(true)
+        viewModelScope.launch(dispatchers.io()) {
+            val result = interactor.factAboutRandomNumber()
+            communications.showProgress(false)
+            result.map(numbersResultMapper)
+        }
     }
 
     override fun fetchNumberFact(number: String) {
-        TODO("Not yet implemented")
+        if (number.isEmpty())
+            communications.showState(UiState.Error(manageResources.string(R.string.empty_number_error_message)))
+        else {
+            communications.showProgress(true)
+            viewModelScope.launch(dispatchers.io()) {
+                val result = interactor.factAboutNumber(number)
+                communications.showProgress(false)
+                result.map(numbersResultMapper)
+            }
+        }
     }
 }
 
