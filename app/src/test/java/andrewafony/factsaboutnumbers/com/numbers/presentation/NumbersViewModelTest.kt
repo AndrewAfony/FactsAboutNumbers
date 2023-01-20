@@ -25,26 +25,24 @@ class NumbersViewModelTest : BaseTest() {
     private lateinit var interactor: TestNumbersInteractor
     private lateinit var viewModel: NumbersViewModel
     private lateinit var manageResources: TestManageResources
+    private lateinit var dispatchers: TestDispatchersList
 
     @Before
     fun init() {
         communication = TestNumbersCommunication()
         interactor = TestNumbersInteractor()
         manageResources = TestManageResources()
+        dispatchers = TestDispatchersList()
+
         viewModel = NumbersViewModel(
-            TestDispatchersList(),
             communication,
             interactor,
-            NumbersResultMapper(communication, NumberUiMapper()),
-            manageResources
+            manageResources,
+            HandleNumbersRequest.Base(communication,
+                dispatchers,
+                NumbersResultMapper(communication, NumberUiMapper()))
         )
     }
-
-//    @After
-//    fun tearDown() {
-//        Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
-//        mainThreadSurrogate.close()
-//    }
 
     /**
      * Initial test
@@ -116,7 +114,8 @@ class NumbersViewModelTest : BaseTest() {
         assertEquals(true, communication.progressCalledList[0]) // progress bar is shown
 
         assertEquals(1, interactor.fetchAboutNumberCalledList.size)
-        assertEquals(NumbersResult.Success(listOf(NumberFact("45", "fact about 45"))), interactor.fetchAboutNumberCalledList[0])
+        assertEquals(NumbersResult.Success(listOf(NumberFact("45", "fact about 45"))),
+            interactor.fetchAboutNumberCalledList[0])
 
         assertEquals(2, communication.progressCalledList.size)
         assertEquals(false, communication.progressCalledList[1])
@@ -167,7 +166,7 @@ private class TestNumbersInteractor : NumbersInteractor {
 }
 
 private class TestDispatchersList(
-    private val dispatcher: CoroutineDispatcher = TestCoroutineDispatcher()
+    private val dispatcher: CoroutineDispatcher = TestCoroutineDispatcher(),
 ) : DispatchersList {
 
     override fun io(): CoroutineDispatcher = dispatcher

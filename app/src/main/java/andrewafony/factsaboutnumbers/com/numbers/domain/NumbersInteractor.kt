@@ -1,7 +1,5 @@
 package andrewafony.factsaboutnumbers.com.numbers.domain
 
-import android.widget.FrameLayout
-
 interface NumbersInteractor {
 
     suspend fun init(): NumbersResult

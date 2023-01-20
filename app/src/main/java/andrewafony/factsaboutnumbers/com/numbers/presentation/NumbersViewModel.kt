@@ -4,16 +4,15 @@ import andrewafony.factsaboutnumbers.com.R
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersResult
 import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class NumbersViewModel(
-    private val dispatchers: DispatchersList,
     private val communications: NumbersCommunications,
     private val interactor: NumbersInteractor,
-    private val numbersResultMapper: NumbersResultMapper,
     private val manageResources: ManageResources,
+    private val requestHandler: HandleNumbersRequest,
 ) : ViewModel(), ObserveNumbers, FetchNumbers {
-
 
     override fun observeProgress(owner: LifecycleOwner, observer: Observer<Boolean>) {
         communications.observeProgress(owner, observer)
@@ -28,32 +27,39 @@ class NumbersViewModel(
     }
 
     override fun init(isFirstRun: Boolean) {
-        if (isFirstRun) {
-            communications.showProgress(true)
-            viewModelScope.launch(dispatchers.io()) {
-                val result = interactor.init()
-                communications.showProgress(false)
-                result.map(numbersResultMapper)
-            }
-        }
+        if (isFirstRun)
+            requestHandler.handle(viewModelScope) { interactor.init() }
     }
 
     override fun fetchRandomNumberFact() {
-        communications.showProgress(true)
-        viewModelScope.launch(dispatchers.io()) {
-            val result = interactor.factAboutRandomNumber()
-            communications.showProgress(false)
-            result.map(numbersResultMapper)
-        }
+        requestHandler.handle(viewModelScope) { interactor.factAboutRandomNumber() }
     }
 
     override fun fetchNumberFact(number: String) {
         if (number.isEmpty())
             communications.showState(UiState.Error(manageResources.string(R.string.empty_number_error_message)))
         else {
+            requestHandler.handle(viewModelScope) { interactor.factAboutNumber(number) }
+        }
+    }
+}
+
+interface HandleNumbersRequest {
+
+    fun handle(
+        coroutineScope: CoroutineScope,
+        block: suspend () -> NumbersResult,
+    )
+
+    class Base(
+        private val communications: NumbersCommunications,
+        private val dispatchers: DispatchersList,
+        private val numbersResultMapper: NumbersResult.Mapper<Unit>,
+    ) : HandleNumbersRequest {
+        override fun handle(coroutineScope: CoroutineScope, block: suspend () -> NumbersResult) {
             communications.showProgress(true)
-            viewModelScope.launch(dispatchers.io()) {
-                val result = interactor.factAboutNumber(number)
+            coroutineScope.launch(dispatchers.io()) {
+                val result = block.invoke()
                 communications.showProgress(false)
                 result.map(numbersResultMapper)
             }
