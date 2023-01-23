@@ -1,5 +1,6 @@
 package andrewafony.factsaboutnumbers.com.numbers.domain
 
+import andrewafony.factsaboutnumbers.com.numbers.presentation.ManageResources
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -11,12 +12,17 @@ class NumbersInteractorTest {
 
     private lateinit var repository: TestNumbersRepository
     private lateinit var interactor: NumbersInteractor
+    private lateinit var manageResources: TestManageResources
 
     @Before
     fun setup() {
         repository = TestNumbersRepository()
+        manageResources = TestManageResources()
 
-        interactor = NumbersInteractor.Base(repository)
+        interactor = NumbersInteractor.Base(
+            repository,
+            HandleRequest.Base(repository, HandleError.Base(manageResources))
+        )
     }
 
     /**
@@ -49,6 +55,7 @@ class NumbersInteractorTest {
     @Test
     fun test_fact_about_number_error() = runTest {
         repository.numberFactError(true)
+        manageResources.changeExpected("No internet connection")
 
         val actual = interactor.factAboutNumber("7")
         val expected = NumbersResult.Failure("No internet connection")
@@ -72,6 +79,7 @@ class NumbersInteractorTest {
     @Test
     fun test_fact_random_about_number_error() = runTest {
         repository.randomNumberFactError(true)
+        manageResources.changeExpected("No internet connection")
 
         val actual = interactor.factAboutRandomNumber()
         val expected = NumbersResult.Failure("No internet connection")
@@ -112,23 +120,37 @@ private class TestNumbersRepository : NumbersRepository {
         numberFactError = error
     }
 
-    override fun allNumbersFacts(): List<NumberFact> {
+    override suspend fun allNumbersFacts(): List<NumberFact> {
         allNumbersFactsCallCount++
         return allNumbersFacts
     }
 
-    override fun numberFact(number: String): NumberFact {
+    override suspend fun numberFact(number: String): NumberFact {
         numberFactCallList.add(number)
+        allNumbersFacts.add(numberFact)
         if (numberFactError)
-            throw NoInternetConnectionException()
+            throw NoConnectionException()
         return numberFact
     }
 
-    override fun randomNumberFact(): NumberFact {
+    override suspend fun randomNumberFact(): NumberFact {
         numberRandomFactCallList.add("random number")
+        allNumbersFacts.add(numberFact)
         if (numberFactError)
-            throw NoInternetConnectionException()
+            throw NoConnectionException()
         return numberFact
     }
 
+}
+
+
+private class TestManageResources : ManageResources {
+
+    private var value: String = ""
+
+    fun changeExpected(newValue: String) {
+        value = newValue
+    }
+
+    override fun string(id: Int): String = value
 }

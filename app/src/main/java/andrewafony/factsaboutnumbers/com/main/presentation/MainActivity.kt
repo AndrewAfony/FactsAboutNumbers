@@ -2,10 +2,8 @@ package andrewafony.factsaboutnumbers.com.main.presentation
 
 import andrewafony.factsaboutnumbers.com.R
 import andrewafony.factsaboutnumbers.com.numbers.presentation.NumbersFragment
-import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,5 +17,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
 
