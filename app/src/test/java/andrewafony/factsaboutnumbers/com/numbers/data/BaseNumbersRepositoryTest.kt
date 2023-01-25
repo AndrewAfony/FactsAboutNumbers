@@ -6,7 +6,6 @@ import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
-
 import org.junit.Before
 import org.junit.Test
 import java.net.UnknownHostException
@@ -22,7 +21,13 @@ class BaseNumbersRepositoryTest {
     fun setUp() {
         cloudDataSource = TestNumbersCloudDataSource()
         cacheDataSource = TestNumbersCacheDataSource()
-        repository = BaseNumbersRepository(cloudDataSource, cacheDataSource)
+        val mapper = NumberDataToDomainMapper()
+        repository = BaseNumbersRepository(
+            cloudDataSource,
+            cacheDataSource,
+            mapper,
+            HandleDataRequest.Base(cacheDataSource, mapper, HandleDomainError())
+        )
     }
 
     @Test
@@ -52,7 +57,7 @@ class BaseNumbersRepositoryTest {
         cacheDataSource.replaceData(emptyList())
 
         val actual = repository.numberFact("1")
-        val expected = NumberData("1", "fact about 1")
+        val expected = NumberFact("1", "fact about 1")
 
         assertEquals(expected, actual)
         assertEquals(1, cloudDataSource.numberFactCalledCount)
@@ -60,7 +65,7 @@ class BaseNumbersRepositoryTest {
         assertEquals(1, cacheDataSource.containsCalledList.size)
         assertEquals(0, cacheDataSource.numberFactCalled.size) // get from cache method is not called
         assertEquals(1, cacheDataSource.saveNumberFactCalledCount) //save to cache method is called only once
-        assertEquals(expected, cacheDataSource.data[0]) // NumberFact is actually in data
+        assertEquals(NumberData("1", "fact about 1"), cacheDataSource.data[0]) // NumberFact is actually in data
 
 //        assertEquals("10", cacheDataSource.numberFactCalled[0]) // check if argument is passed from repository method to cacheDataSource
     }
@@ -86,14 +91,14 @@ class BaseNumbersRepositoryTest {
         cacheDataSource.replaceData(listOf(NumberData("10", "fact about 10")))
 
         val actual = repository.numberFact("10")
-        val expected = NumberData("10", "fact about 10")
+        val expected = NumberFact("10", "fact about 10")
 
         assertEquals(expected, actual)
         assertEquals(0, cloudDataSource.numberFactCalledCount)
         assertEquals(true, cacheDataSource.containsCalledList[0])
         assertEquals(1, cacheDataSource.containsCalledList.size)
         assertEquals(1, cacheDataSource.numberFactCalled.size)
-        assertEquals(cacheDataSource.numberFactCalled[0], actual)
+        assertEquals("10", cacheDataSource.numberFactCalled[0])
         assertEquals(1, cacheDataSource.saveNumberFactCalledCount)
     }
 
@@ -103,16 +108,14 @@ class BaseNumbersRepositoryTest {
         cacheDataSource.replaceData(emptyList())
 
         val actual = repository.randomNumberFact()
-        val expected = NumberData("1", "fact about 1")
+        val expected = NumberFact("1", "fact about 1")
 
         assertEquals(expected, actual)
-        assertEquals(false, cacheDataSource.containsCalledList[0])
-        assertEquals(1, cacheDataSource.containsCalledList.size)
         assertEquals(0, cloudDataSource.numberFactCalledCount)
         assertEquals(1, cloudDataSource.randomNumberFactCalledCount)
         assertEquals(0, cacheDataSource.numberFactCalled.size)
         assertEquals(1, cacheDataSource.saveNumberFactCalledCount)
-        assertEquals(expected, cacheDataSource.data[0])
+        assertEquals(NumberData("1", "fact about 1"), cacheDataSource.data[0])
     }
 
 
@@ -123,8 +126,6 @@ class BaseNumbersRepositoryTest {
 
         repository.randomNumberFact()
         assertEquals(0, cloudDataSource.randomNumberFactCalledCount)
-        assertEquals(false, cacheDataSource.containsCalledList[0])
-        assertEquals(1, cacheDataSource.containsCalledList.size)
         assertEquals(1, cloudDataSource.randomNumberFactCalledCount)
         assertEquals(0, cacheDataSource.numberFactCalled.size) // get from cache method is not called
         assertEquals(0, cacheDataSource.saveNumberFactCalledCount) //save to cache method is called only once
@@ -137,15 +138,12 @@ class BaseNumbersRepositoryTest {
         cacheDataSource.replaceData(listOf(NumberData("10", "fact about 10")))
 
         val actual = repository.randomNumberFact()
-        val expected = NumberData("10", "cloud 10")
+        val expected = NumberFact("10", "cloud 10")
 
         assertEquals(expected, actual)
         assertEquals(1, cloudDataSource.randomNumberFactCalledCount)
 
-        assertEquals(true, cacheDataSource.containsCalledList[0])
-        assertEquals(1, cacheDataSource.containsCalledList.size)
-
-        assertEquals(0, cacheDataSource.numberFactCalled.size)
+         assertEquals(0, cacheDataSource.numberFactCalled.size)
         assertEquals(1, cacheDataSource.saveNumberFactCalledCount)
     }
 
@@ -167,7 +165,7 @@ private class TestNumbersCloudDataSource : NumbersCloudDataSource {
         this.numberData = numberData
     }
 
-    override suspend fun numberFact(number: String): NumberData {
+    override suspend fun number(number: String): NumberData {
         numberFactCalledCount++
         return if (isInternetConnection) {
              numberData
@@ -176,7 +174,7 @@ private class TestNumbersCloudDataSource : NumbersCloudDataSource {
         }
     }
 
-    override suspend fun randomNumberFact(): NumberData {
+    override suspend fun randomNumber(): NumberData {
         randomNumberFactCalledCount++
         return if (isInternetConnection) {
             numberData
@@ -211,7 +209,7 @@ private class TestNumbersCacheDataSource : NumbersCacheDataSource {
         return result
     }
 
-    override suspend fun numberFact(number: String): NumberData {
+    override suspend fun number(number: String): NumberData {
         numberFactCalled.add(number)
         return data[0]
     }
