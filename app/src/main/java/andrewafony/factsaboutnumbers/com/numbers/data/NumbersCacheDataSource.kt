@@ -2,11 +2,11 @@ package andrewafony.factsaboutnumbers.com.numbers.data
 
 interface NumbersCacheDataSource: FetchNumber {
 
-    suspend fun allNumbersFact(): List<NumberData>
+    suspend fun allNumbers(): List<NumberData>
 
     suspend fun contains(number: String): Boolean
 
-    suspend fun saveNumberFact(numberData: NumberData)
+    suspend fun saveNumber(numberData: NumberData)
 }
 
 interface FetchNumber {

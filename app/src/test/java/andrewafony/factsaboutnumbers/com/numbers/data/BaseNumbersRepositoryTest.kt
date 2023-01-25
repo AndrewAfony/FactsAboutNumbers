@@ -67,7 +67,6 @@ class BaseNumbersRepositoryTest {
         assertEquals(1, cacheDataSource.saveNumberFactCalledCount) //save to cache method is called only once
         assertEquals(NumberData("1", "fact about 1"), cacheDataSource.data[0]) // NumberFact is actually in data
 
-//        assertEquals("10", cacheDataSource.numberFactCalled[0]) // check if argument is passed from repository method to cacheDataSource
     }
 
     @Test(expected = NoConnectionException::class)
@@ -198,13 +197,13 @@ private class TestNumbersCacheDataSource : NumbersCacheDataSource {
         data.addAll(newData)
     }
 
-    override suspend fun allNumbersFact(): List<NumberData> {
+    override suspend fun allNumbers(): List<NumberData> {
         allNumbersFactCallCount++
         return data
     }
 
     override suspend fun contains(number: String): Boolean {
-        var result = data.find { it.matches(number) } != null
+        var result = data.find { it.map(NumberData.Mapper.Matches(number)) } != null
         containsCalledList.add(result)
         return result
     }
@@ -214,7 +213,7 @@ private class TestNumbersCacheDataSource : NumbersCacheDataSource {
         return data[0]
     }
 
-    override suspend fun saveNumberFact(numberData: NumberData) {
+    override suspend fun saveNumber(numberData: NumberData) {
         saveNumberFactCalledCount++
         data.add(numberData)
     }

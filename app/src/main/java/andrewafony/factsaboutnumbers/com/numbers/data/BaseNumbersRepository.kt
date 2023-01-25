@@ -11,7 +11,7 @@ class BaseNumbersRepository(
 ) : NumbersRepository {
 
     override suspend fun allNumbersFacts(): List<NumberFact> {
-        val data = cacheDataSource.allNumbersFact()
+        val data = cacheDataSource.allNumbers()
         return data.map { it.map(mapperToDomain) }
     }
 
