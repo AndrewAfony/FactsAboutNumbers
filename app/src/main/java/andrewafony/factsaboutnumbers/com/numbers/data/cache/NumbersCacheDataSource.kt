@@ -1,4 +1,6 @@
-package andrewafony.factsaboutnumbers.com.numbers.data
+package andrewafony.factsaboutnumbers.com.numbers.data.cache
+
+import andrewafony.factsaboutnumbers.com.numbers.data.NumberData
 
 interface NumbersCacheDataSource: FetchNumber {
 

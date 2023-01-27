@@ -1,5 +1,7 @@
 package andrewafony.factsaboutnumbers.com.numbers.data
 
+import andrewafony.factsaboutnumbers.com.numbers.data.cache.NumbersCacheDataSource
+import andrewafony.factsaboutnumbers.com.numbers.data.cloud.NumbersCloudDataSource
 import andrewafony.factsaboutnumbers.com.numbers.domain.NoConnectionException
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumberFact
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersRepository

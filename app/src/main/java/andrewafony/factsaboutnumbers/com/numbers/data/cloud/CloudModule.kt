@@ -1,4 +1,4 @@
-package andrewafony.factsaboutnumbers.com.numbers.data
+package andrewafony.factsaboutnumbers.com.numbers.data.cloud
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

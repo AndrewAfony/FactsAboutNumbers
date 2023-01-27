@@ -1,10 +1,9 @@
 package andrewafony.factsaboutnumbers.com.numbers.data
 
+import andrewafony.factsaboutnumbers.com.numbers.data.cache.NumbersCacheDataSource
+import andrewafony.factsaboutnumbers.com.numbers.data.cloud.NumbersCloudDataSource
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumberFact
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersRepository
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 class BaseNumbersRepository(
     private val cloudDataSource: NumbersCloudDataSource,

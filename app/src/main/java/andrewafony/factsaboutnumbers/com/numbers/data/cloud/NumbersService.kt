@@ -1,4 +1,4 @@
-package andrewafony.factsaboutnumbers.com.numbers.data
+package andrewafony.factsaboutnumbers.com.numbers.data.cloud
 
 import retrofit2.Response
 import retrofit2.http.GET

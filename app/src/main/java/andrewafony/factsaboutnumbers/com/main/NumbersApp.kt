@@ -1,7 +1,7 @@
 package andrewafony.factsaboutnumbers.com.main
 
 import andrewafony.factsaboutnumbers.com.BuildConfig
-import andrewafony.factsaboutnumbers.com.numbers.data.CloudModule
+import andrewafony.factsaboutnumbers.com.numbers.data.cloud.CloudModule
 import android.app.Application
 
 class NumbersApp : Application() {
