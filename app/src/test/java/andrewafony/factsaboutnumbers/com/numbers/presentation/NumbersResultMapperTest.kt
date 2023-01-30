@@ -13,7 +13,7 @@ class NumbersResultMapperTest : BaseTest() {
         val mapper = NumbersResultMapper(communications, NumberUiMapper())
 
         mapper.map(emptyList(), "not empty message")
-        assertEquals(UiState.Error("not empty message"), communications.stateCalledList[0])
+        assertEquals(UiState.ShowError("not empty message"), communications.stateCalledList[0])
     }
 
     @Test

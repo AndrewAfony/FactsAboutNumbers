@@ -5,16 +5,13 @@ import andrewafony.factsaboutnumbers.com.numbers.domain.NumberUiMapper
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersResult
 import andrewafony.factsaboutnumbers.com.numbers.presentation.*
+import android.view.View
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -56,9 +53,9 @@ class NumbersViewModelTest : BaseTest() {
 
         viewModel.init(isFirstRun = true)
 
-        assertEquals(true, communication.progressCalledList[0]) // progress bar is shown
+        assertEquals(View.VISIBLE, communication.progressCalledList[0]) // progress bar is shown
         assertEquals(2, communication.progressCalledList.size)
-        assertEquals(false, communication.progressCalledList[1])
+        assertEquals(View.GONE, communication.progressCalledList[1])
 
         assertEquals(1, communication.stateCalledList.size)
         assertEquals(true, communication.stateCalledList[0] is UiState.Success)
@@ -69,15 +66,15 @@ class NumbersViewModelTest : BaseTest() {
         interactor.changeExpectedResult(NumbersResult.Failure("No internet connection"))
         viewModel.fetchRandomNumberFact()
 
-        assertEquals(true, communication.progressCalledList[2])
+        assertEquals(View.VISIBLE, communication.progressCalledList[2])
 
         assertEquals(1, interactor.fetchAboutRandomNumberCalledList.size)
 
         assertEquals(4, communication.progressCalledList.size)
-        assertEquals(false, communication.progressCalledList[3])
+        assertEquals(View.GONE, communication.progressCalledList[3])
 
         assertEquals(2, communication.stateCalledList.size) // ??????????
-        assertEquals(UiState.Error("No internet connection"), communication.stateCalledList[1])
+        assertEquals(UiState.ShowError("No internet connection"), communication.stateCalledList[1])
         assertEquals(0, communication.timesShowList)
 
         viewModel.init(isFirstRun = false)
@@ -100,7 +97,7 @@ class NumbersViewModelTest : BaseTest() {
         assertEquals(0, communication.progressCalledList.size)
 
         assertEquals(1, communication.stateCalledList.size) // ??????????
-        assertEquals(UiState.Error("Entered number is empty"), communication.stateCalledList[0])
+        assertEquals(UiState.ShowError("Entered number is empty"), communication.stateCalledList[0])
 
         assertEquals(0, communication.timesShowList)
     }
@@ -111,20 +108,27 @@ class NumbersViewModelTest : BaseTest() {
             "fact about 45"))))
         viewModel.fetchNumberFact("45")
 
-        assertEquals(true, communication.progressCalledList[0]) // progress bar is shown
+        assertEquals(View.VISIBLE, communication.progressCalledList[0]) // progress bar is shown
 
         assertEquals(1, interactor.fetchAboutNumberCalledList.size)
         assertEquals(NumbersResult.Success(listOf(NumberFact("45", "fact about 45"))),
             interactor.fetchAboutNumberCalledList[0])
 
         assertEquals(2, communication.progressCalledList.size)
-        assertEquals(false, communication.progressCalledList[1])
+        assertEquals(View.GONE, communication.progressCalledList[1])
 
         assertEquals(1, communication.stateCalledList.size) // ??????????
         assertEquals(true, communication.stateCalledList[0] is UiState.Success)
 
         assertEquals(1, communication.timesShowList)
         assertEquals(NumberUi("45", "fact about 45"), communication.numbersList[0])
+    }
+
+    @Test
+    fun test_clear_error() {
+        viewModel.clearError()
+        assertEquals(1, communication.stateCalledList.size)
+        assertTrue(communication.stateCalledList[0] is UiState.ClearError)
     }
 }
 
