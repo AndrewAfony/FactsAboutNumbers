@@ -1,6 +1,8 @@
 package andrewafony.factsaboutnumbers.com.numbers.presentation
 
 import andrewafony.factsaboutnumbers.com.R
+import andrewafony.factsaboutnumbers.com.databinding.FragmentNumbersBinding
+import andrewafony.factsaboutnumbers.com.main.sl.ProvideViewModel
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,12 +20,23 @@ class NumbersFragment : Fragment() {
 
     private lateinit var viewModel: NumbersViewModel
 
+    private lateinit var binding: FragmentNumbersBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_numbers, container, false)
+    ): View {
+        binding = FragmentNumbersBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = (requireActivity() as ProvideViewModel).provideViewModel(
+            NumbersViewModel::class.java,
+            this
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,7 +46,6 @@ class NumbersFragment : Fragment() {
         val factButton = view.findViewById<Button>(R.id.buttonGetFact)
         val randomFactButton = view.findViewById<Button>(R.id.buttonGetRandomFact)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_history)
-        val inputEditText = view.findViewWithTag<TextInputEditText>(R.id.editText)
         val inputLayout = view.findViewById<TextInputLayout>(R.id.inputLayout)
 
         val adapter = NumbersAdapter(object : ClickListener {
@@ -44,14 +56,8 @@ class NumbersFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
-        inputEditText.addTextChangedListener(object : SimpleTextWatcher() {
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.clearError()
-            }
-        })
-
         factButton.setOnClickListener {
-            viewModel.fetchNumberFact(inputEditText.text.toString())
+            viewModel.fetchNumberFact(binding.editText.text.toString())
         }
 
         randomFactButton.setOnClickListener {
@@ -59,7 +65,7 @@ class NumbersFragment : Fragment() {
         }
 
         viewModel.observeState(this) {
-            it.apply(inputLayout, inputEditText)
+            it.apply(inputLayout, binding.editText)
         }
 
         viewModel.observeProgress(this) {
@@ -71,6 +77,15 @@ class NumbersFragment : Fragment() {
         }
 
         viewModel.init(savedInstanceState == null)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.editText.addTextChangedListener(object : SimpleTextWatcher() {
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.clearError()
+            }
+        })
     }
 }
 

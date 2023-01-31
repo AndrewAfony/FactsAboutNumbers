@@ -1,17 +1,26 @@
 package andrewafony.factsaboutnumbers.com.main
 
-import andrewafony.factsaboutnumbers.com.BuildConfig
-import andrewafony.factsaboutnumbers.com.numbers.data.cloud.CloudModule
+import andrewafony.factsaboutnumbers.com.main.sl.Core
+import andrewafony.factsaboutnumbers.com.main.sl.DependencyContainer
+import andrewafony.factsaboutnumbers.com.main.sl.ProvideViewModel
+import andrewafony.factsaboutnumbers.com.main.sl.ViewModelsFactory
 import android.app.Application
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 
-class NumbersApp : Application() {
+class NumbersApp : Application(), ProvideViewModel {
+
+    private lateinit var viewModelsFactory: ViewModelsFactory
 
     override fun onCreate() {
         super.onCreate()
 
-        val cloudModule = if (BuildConfig.DEBUG)
-            CloudModule.Debug()
-        else
-            CloudModule.Release()
+        viewModelsFactory = ViewModelsFactory(DependencyContainer.Base(Core.Base(true, this)))
+
+    }
+
+    override fun <T : ViewModel> provideViewModel(clazz: Class<T>, owner: ViewModelStoreOwner): T {
+        return ViewModelProvider(owner, viewModelsFactory)[clazz]
     }
 }
