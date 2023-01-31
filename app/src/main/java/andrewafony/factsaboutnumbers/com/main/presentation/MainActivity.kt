@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity(), ProvideViewModel {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d("MyHelper", "Bundle: $savedInstanceState")
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, NumbersFragment())

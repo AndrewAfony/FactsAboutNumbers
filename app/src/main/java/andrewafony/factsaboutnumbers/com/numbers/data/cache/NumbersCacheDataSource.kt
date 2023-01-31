@@ -10,6 +10,8 @@ interface NumbersCacheDataSource : FetchNumber {
 
     suspend fun contains(number: String): Boolean
 
+    suspend fun saveNumber(numberData: NumberData)
+
     class Base(
         private val dao: NumbersDao,
         private val dataToCache: NumberData.Mapper<NumberCache>,
@@ -30,15 +32,11 @@ interface NumbersCacheDataSource : FetchNumber {
             dao.insert(numberData.map(dataToCache))
         }
 
-
         override suspend fun number(number: String): NumberData = mutex.withLock {
             val numberCache = dao.number(number)
             return NumberData(numberCache.number, numberCache.fact)
         }
     }
-
-    suspend fun saveNumber(numberData: NumberData)
-
 }
 
 interface FetchNumber {

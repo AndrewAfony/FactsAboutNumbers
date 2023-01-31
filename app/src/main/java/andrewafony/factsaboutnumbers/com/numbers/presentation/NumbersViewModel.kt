@@ -61,6 +61,7 @@ interface HandleNumbersRequest {
         private val dispatchers: DispatchersList,
         private val numbersResultMapper: NumbersResult.Mapper<Unit>,
     ) : HandleNumbersRequest {
+
         override fun handle(coroutineScope: CoroutineScope, block: suspend () -> NumbersResult) {
             communications.showProgress(View.VISIBLE)
             coroutineScope.launch(dispatchers.io()) {

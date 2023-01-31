@@ -22,6 +22,10 @@ class NumbersFragment : Fragment() {
 
     private lateinit var binding: FragmentNumbersBinding
 
+    private val watcher = object : SimpleTextWatcher() {
+        override fun afterTextChanged(s: Editable?) = viewModel.clearError()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,11 +85,12 @@ class NumbersFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.editText.addTextChangedListener(object : SimpleTextWatcher() {
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.clearError()
-            }
-        })
+        binding.editText.addTextChangedListener(watcher)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.editText.removeTextChangedListener(watcher)
     }
 }
 

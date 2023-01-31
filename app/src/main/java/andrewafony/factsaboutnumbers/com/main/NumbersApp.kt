@@ -16,7 +16,9 @@ class NumbersApp : Application(), ProvideViewModel {
     override fun onCreate() {
         super.onCreate()
 
-        viewModelsFactory = ViewModelsFactory(DependencyContainer.Base(Core.Base(true, this)))
+        viewModelsFactory = ViewModelsFactory(
+            DependencyContainer.Base(Core.Base(true, this))
+        )
 
     }
 
