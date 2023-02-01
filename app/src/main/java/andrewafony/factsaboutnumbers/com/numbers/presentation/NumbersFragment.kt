@@ -2,6 +2,8 @@ package andrewafony.factsaboutnumbers.com.numbers.presentation
 
 import andrewafony.factsaboutnumbers.com.R
 import andrewafony.factsaboutnumbers.com.databinding.FragmentNumbersBinding
+import andrewafony.factsaboutnumbers.com.main.presentation.MainViewModel
+import andrewafony.factsaboutnumbers.com.main.presentation.ShowDetails
 import andrewafony.factsaboutnumbers.com.main.sl.ProvideViewModel
 import android.os.Bundle
 import android.text.Editable
@@ -12,13 +14,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class NumbersFragment : Fragment() {
 
     private lateinit var viewModel: NumbersViewModel
+    private val mainViewModel: ShowDetails by activityViewModels<MainViewModel> ()
 
     private lateinit var binding: FragmentNumbersBinding
 
@@ -38,7 +41,7 @@ class NumbersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = (requireActivity() as ProvideViewModel).provideViewModel(
-            NumbersViewModel::class.java,
+            NumbersViewModel.Base::class.java,
             this
         )
     }
@@ -54,7 +57,7 @@ class NumbersFragment : Fragment() {
 
         val adapter = NumbersAdapter(object : ClickListener {
             override fun click(item: NumberUi) {
-                // todo
+                mainViewModel.showDetails(item)
             }
         })
 

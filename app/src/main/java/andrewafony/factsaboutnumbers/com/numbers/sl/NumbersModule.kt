@@ -16,9 +16,9 @@ import andrewafony.factsaboutnumbers.com.numbers.domain.NumberUiMapper
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
 import andrewafony.factsaboutnumbers.com.numbers.presentation.*
 
-class NumbersModule(private val core: Core): Module<NumbersViewModel> {
+class NumbersModule(private val core: Core): Module<NumbersViewModel.Base> {
 
-    override fun viewModel(): NumbersViewModel {
+    override fun viewModel(): NumbersViewModel.Base {
 
         val communication = NumbersCommunications.Base(
             ProgressCommunication.Base(),
@@ -42,7 +42,7 @@ class NumbersModule(private val core: Core): Module<NumbersViewModel> {
             )
         )
 
-        return NumbersViewModel(
+        return NumbersViewModel.Base(
             requestHandler = HandleNumbersRequest.Base(
                 dispatchers = core.provideDispatchers(),
                 communications = communication,
@@ -56,7 +56,8 @@ class NumbersModule(private val core: Core): Module<NumbersViewModel> {
                     repository = repository,
                     handleError = HandleError.Base(core)
                 )
-            )
+            ),
+            navigationCommunication = core.provideNavigation()
         )
     }
 }

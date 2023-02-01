@@ -1,9 +1,7 @@
 package andrewafony.factsaboutnumbers.com.main
 
-import andrewafony.factsaboutnumbers.com.main.sl.Core
-import andrewafony.factsaboutnumbers.com.main.sl.DependencyContainer
-import andrewafony.factsaboutnumbers.com.main.sl.ProvideViewModel
-import andrewafony.factsaboutnumbers.com.main.sl.ViewModelsFactory
+import andrewafony.factsaboutnumbers.com.BuildConfig
+import andrewafony.factsaboutnumbers.com.main.sl.*
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +15,12 @@ class NumbersApp : Application(), ProvideViewModel {
         super.onCreate()
 
         viewModelsFactory = ViewModelsFactory(
-            DependencyContainer.Base(Core.Base(true, this))
+            DependencyContainer.Base(
+                Core.Base(
+                    if (BuildConfig.DEBUG) ProvideInstances.Mock(this) else ProvideInstances.Release(this),
+                    this
+                )
+            )
         )
 
     }

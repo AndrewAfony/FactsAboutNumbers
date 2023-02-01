@@ -1,5 +1,7 @@
 package andrewafony.factsaboutnumbers.com.numbers.presentation
 
+import andrewafony.factsaboutnumbers.com.main.presentation.NavigationCommunication
+import andrewafony.factsaboutnumbers.com.main.presentation.NavigationStrategy
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumberFact
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumberUiMapper
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
@@ -23,6 +25,7 @@ class NumbersViewModelTest : BaseTest() {
     private lateinit var viewModel: NumbersViewModel
     private lateinit var manageResources: TestManageResources
     private lateinit var dispatchers: TestDispatchersList
+    private lateinit var navigationCommunication: TestNavigationCommunication
 
     @Before
     fun init() {
@@ -30,14 +33,16 @@ class NumbersViewModelTest : BaseTest() {
         interactor = TestNumbersInteractor()
         manageResources = TestManageResources()
         dispatchers = TestDispatchersList()
+        navigationCommunication = TestNavigationCommunication()
 
-        viewModel = NumbersViewModel(
+        viewModel = NumbersViewModel.Base(
             communication,
             interactor,
             manageResources,
             HandleNumbersRequest.Base(communication,
                 dispatchers,
-                NumbersResultMapper(communication, NumberUiMapper()))
+                NumbersResultMapper(communication, NumberUiMapper())),
+            navigationCommunication
         )
     }
 
@@ -166,6 +171,17 @@ private class TestNumbersInteractor : NumbersInteractor {
     override suspend fun factAboutRandomNumber(): NumbersResult {
         fetchAboutRandomNumberCalledList.add(result)
         return result
+    }
+}
+
+private class TestNavigationCommunication : NavigationCommunication.Mutate {
+
+    lateinit var strategy: NavigationStrategy
+    var count = 0
+
+    override fun map(source: NavigationStrategy) {
+        count++
+        strategy = source
     }
 }
 

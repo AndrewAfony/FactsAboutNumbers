@@ -15,11 +15,13 @@ class MainActivity : AppCompatActivity(), ProvideViewModel {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, NumbersFragment())
-                .commit()
+        val viewModel = provideViewModel(MainViewModel::class.java, this)
+
+        viewModel.observe(this) { strategy ->
+            strategy.navigate(supportFragmentManager, R.id.container)
         }
+
+        viewModel.init(savedInstanceState == null)
     }
 
     override fun <T : ViewModel> provideViewModel(clazz: Class<T>, owner: ViewModelStoreOwner): T =

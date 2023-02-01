@@ -4,41 +4,40 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 interface CloudModule {
 
     fun <T> service(clazz: Class<T>): T
 
-    abstract class Abstract: CloudModule {
+    class Mock: CloudModule {
+        override fun <T> service(clazz: Class<T>): T {
+            return MockNumbersService() as T
+        }
+    }
 
-        protected abstract val logLevel: HttpLoggingInterceptor.Level
-        protected abstract val baseUrl: String
+    class Base : CloudModule {
 
         override fun <T> service(clazz: Class<T>): T {
-            val interceptor = HttpLoggingInterceptor().apply { setLevel(logLevel) }
+            val interceptor = HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(interceptor)
+                .readTimeout(1, TimeUnit.MINUTES)
                 .build()
 
             val retrofit = Retrofit.Builder()
                 .client(client)
-                .baseUrl(baseUrl)
+                .baseUrl(BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
 
             return retrofit.create(clazz)
         }
-    }
 
-    class Debug: Abstract() {
-        override val logLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
-        override val baseUrl: String = "http://numbersapi.com/"
-    }
-
-    class Release : Abstract() {
-        override val logLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.NONE
-        override val baseUrl: String = "http://numbersapi.com/"
+        companion object {
+            private const val BASE_URL = "http://numbersapi.com/"
+        }
     }
 
 }

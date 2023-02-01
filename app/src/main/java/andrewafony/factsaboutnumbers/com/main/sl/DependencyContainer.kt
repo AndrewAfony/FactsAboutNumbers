@@ -1,5 +1,8 @@
 package andrewafony.factsaboutnumbers.com.main.sl
 
+import andrewafony.factsaboutnumbers.com.details.presentation.DetailsViewModel
+import andrewafony.factsaboutnumbers.com.details.sl.NumberDetailsModule
+import andrewafony.factsaboutnumbers.com.main.presentation.MainViewModel
 import andrewafony.factsaboutnumbers.com.numbers.presentation.NumbersViewModel
 import andrewafony.factsaboutnumbers.com.numbers.sl.NumbersModule
 import androidx.lifecycle.ViewModel
@@ -20,10 +23,11 @@ interface DependencyContainer {
     ) : DependencyContainer {
 
         override fun <T : ViewModel> module(clazz: Class<T>): Module<*> =
-            if (clazz == NumbersViewModel::class.java) {
-                NumbersModule(core)
-            } else
-                dependencyContainer.module(clazz)
-
+            when (clazz) {
+                MainViewModel::class.java -> MainModule(core)
+                NumbersViewModel.Base::class.java -> NumbersModule(core)
+                DetailsViewModel::class.java -> NumberDetailsModule(core)
+                else -> dependencyContainer.module(clazz)
+            }
     }
 }

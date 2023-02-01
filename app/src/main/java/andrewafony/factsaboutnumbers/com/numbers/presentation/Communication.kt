@@ -21,14 +21,13 @@ interface Communication {
         }
     }
 
-    abstract class Ui<T>(liveData: MutableLiveData<T> = MutableLiveData()) : Abstract<T>(liveData) {
+    abstract class Ui<T: Any>(liveData: MutableLiveData<T> = MutableLiveData()) : Abstract<T>(liveData) {
         override fun map(source: T) {
             liveData.value = source
         }
     }
 
-    abstract class Post<T>(liveData: MutableLiveData<T> = MutableLiveData()) : Abstract<T>(liveData) {
+    abstract class Post<T: Any>(liveData: MutableLiveData<T> = MutableLiveData()) : Abstract<T>(liveData) {
         override fun map(source: T) = liveData.postValue(source)
-
     }
 }

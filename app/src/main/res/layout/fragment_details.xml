@@ -3,6 +3,7 @@
     android:id="@+id/detailsTextView"
     xmlns:tools="http://schemas.android.com/tools"
     tools:text="Details of a number"
+    android:background="@color/white"
     android:gravity="center_horizontal"
     android:padding="@dimen/margin_small"
     android:textAppearance="@style/TextAppearance.AppCompat.Title"

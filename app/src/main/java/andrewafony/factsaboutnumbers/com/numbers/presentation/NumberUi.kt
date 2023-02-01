@@ -15,4 +15,6 @@ data class NumberUi(
     override fun map(source: NumberUi): Boolean {
         return source.id == id
     }
+
+    override fun toString(): String = "$id \n\n $fact"
 }
