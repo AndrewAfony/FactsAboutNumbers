@@ -26,8 +26,11 @@ class NavigationTest {
         onView(withId(R.id.buttonGetFact)).perform(click())
 
         onView(withId(R.id.titleTextView)).check(matches(withText("10")))
+        onView(withId(R.id.subtitleTextView)).check(matches(withText("fact about 10")))
 
-        // todo navigation
+        onView(withId(R.id.titleTextView)).perform(click())
+
+        onView(withId(R.id.detailsTextView)).check(matches(withText("10 fact about 10")))
 
         pressBack()
 

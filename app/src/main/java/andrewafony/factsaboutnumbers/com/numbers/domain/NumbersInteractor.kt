@@ -41,6 +41,5 @@ interface HandleRequest {
         } catch (exception: Exception) {
             NumbersResult.Failure(handleError.handle(exception))
         }
-
     }
 }

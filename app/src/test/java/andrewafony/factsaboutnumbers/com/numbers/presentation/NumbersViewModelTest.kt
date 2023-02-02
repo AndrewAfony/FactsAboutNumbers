@@ -41,8 +41,7 @@ class NumbersViewModelTest : BaseTest() {
             manageResources,
             HandleNumbersRequest.Base(communication,
                 dispatchers,
-                NumbersResultMapper(communication, NumberUiMapper())),
-            navigationCommunication
+                NumbersResultMapper(communication, NumberUiMapper()))
         )
     }
 

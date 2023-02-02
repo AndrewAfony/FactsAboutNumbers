@@ -56,8 +56,6 @@ interface NumbersViewModel: ObserveNumbers, FetchNumbers, ClearError, Init{
     }
 }
 
-
-
 interface HandleNumbersRequest {
 
     fun handle(
@@ -90,5 +88,6 @@ interface FetchNumbers {
 }
 
 interface ClearError {
+
     fun clearError()
 }

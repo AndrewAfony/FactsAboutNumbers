@@ -14,7 +14,10 @@ class NumbersAdapter(private val clickListener: ClickListener) :
     private val list = mutableListOf<NumberUi>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NumbersViewHolder {
-        return NumbersViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.number_layout, parent, false), clickListener)
+        return NumbersViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.number_layout, parent, false),
+            clickListener
+        )
     }
 
     override fun onBindViewHolder(holder: NumbersViewHolder, position: Int) {
@@ -32,7 +35,8 @@ class NumbersAdapter(private val clickListener: ClickListener) :
     }
 }
 
-class NumbersViewHolder(view: View, private val clickListener: ClickListener) : RecyclerView.ViewHolder(view) {
+class NumbersViewHolder(view: View, private val clickListener: ClickListener) :
+    RecyclerView.ViewHolder(view) {
 
     private val title = itemView.findViewById<TextView>(R.id.titleTextView)
     private val subtitle = itemView.findViewById<TextView>(R.id.subtitleTextView)
@@ -52,7 +56,7 @@ interface ClickListener {
 class DiffUtilCallback(
     private val oldList: List<NumberUi>,
     private val newList: List<NumberUi>
-): DiffUtil.Callback() {
+) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
 
     override fun getNewListSize(): Int = newList.size
