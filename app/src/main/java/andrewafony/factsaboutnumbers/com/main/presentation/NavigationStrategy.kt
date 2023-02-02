@@ -1,11 +1,12 @@
 package andrewafony.factsaboutnumbers.com.main.presentation
 
+import andrewafony.factsaboutnumbers.com.R
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 
 interface NavigationStrategy {
 
-    fun navigate(manager: FragmentManager, container: Int)
+    fun navigate(manager: FragmentManager, container: Int = R.id.container)
 
     class Replace(private val screen: Screen) : NavigationStrategy {
 

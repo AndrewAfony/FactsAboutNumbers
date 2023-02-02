@@ -56,8 +56,7 @@ class NumbersModule(private val core: Core): Module<NumbersViewModel.Base> {
                     repository = repository,
                     handleError = HandleError.Base(core)
                 )
-            ),
-            navigationCommunication = core.provideNavigation()
+            )
         )
     }
 }

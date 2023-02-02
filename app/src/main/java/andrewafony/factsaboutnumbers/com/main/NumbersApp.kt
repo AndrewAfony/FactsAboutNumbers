@@ -22,7 +22,6 @@ class NumbersApp : Application(), ProvideViewModel {
                 )
             )
         )
-
     }
 
     override fun <T : ViewModel> provideViewModel(clazz: Class<T>, owner: ViewModelStoreOwner): T {

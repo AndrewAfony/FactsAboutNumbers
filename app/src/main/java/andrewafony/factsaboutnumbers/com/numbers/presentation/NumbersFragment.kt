@@ -2,6 +2,7 @@ package andrewafony.factsaboutnumbers.com.numbers.presentation
 
 import andrewafony.factsaboutnumbers.com.R
 import andrewafony.factsaboutnumbers.com.databinding.FragmentNumbersBinding
+import andrewafony.factsaboutnumbers.com.main.presentation.BaseFragment
 import andrewafony.factsaboutnumbers.com.main.presentation.MainViewModel
 import andrewafony.factsaboutnumbers.com.main.presentation.ShowDetails
 import andrewafony.factsaboutnumbers.com.main.sl.ProvideViewModel
@@ -18,25 +19,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 
-class NumbersFragment : Fragment() {
+class NumbersFragment : BaseFragment<FragmentNumbersBinding>() {
 
     private lateinit var viewModel: NumbersViewModel
-    private val mainViewModel: ShowDetails by activityViewModels<MainViewModel> ()
-
-    private lateinit var binding: FragmentNumbersBinding
 
     private val watcher = object : SimpleTextWatcher() {
         override fun afterTextChanged(s: Editable?) = viewModel.clearError()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentNumbersBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override val bindingInflater: (LayoutInflater) -> FragmentNumbersBinding
+        get() = FragmentNumbersBinding::inflate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,15 +1,14 @@
 package andrewafony.factsaboutnumbers.com.numbers.presentation
 
 import andrewafony.factsaboutnumbers.com.R
-import andrewafony.factsaboutnumbers.com.details.presentation.DetailsFragment
 import andrewafony.factsaboutnumbers.com.main.presentation.Init
-import andrewafony.factsaboutnumbers.com.main.presentation.NavigationCommunication
-import andrewafony.factsaboutnumbers.com.main.presentation.NavigationStrategy
-import andrewafony.factsaboutnumbers.com.main.presentation.Screen
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
 import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersResult
 import android.view.View
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -19,8 +18,7 @@ interface NumbersViewModel: ObserveNumbers, FetchNumbers, ClearError, Init{
         private val communications: NumbersCommunications,
         private val interactor: NumbersInteractor,
         private val manageResources: ManageResources,
-        private val requestHandler: HandleNumbersRequest,
-        private val navigationCommunication: NavigationCommunication.Mutate,
+        private val requestHandler: HandleNumbersRequest
     ) : ViewModel(), NumbersViewModel {
 
         override fun observeProgress(owner: LifecycleOwner, observer: Observer<Int>) {

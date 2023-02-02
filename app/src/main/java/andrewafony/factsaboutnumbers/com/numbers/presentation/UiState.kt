@@ -14,8 +14,8 @@ sealed class UiState {
         ) = textInputEditText.setText("")
     }
 
-    abstract class AbstractError(private val message: String, private val isError: Boolean) :
-        UiState() {
+    abstract class AbstractError(private val message: String, private val isError: Boolean) : UiState() {
+
         override fun apply(
             inputLayout: TextInputLayout,
             textInputEditText: TextInputEditText

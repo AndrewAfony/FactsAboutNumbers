@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), ProvideViewModel {
         val viewModel = provideViewModel(MainViewModel::class.java, this)
 
         viewModel.observe(this) { strategy ->
-            strategy.navigate(supportFragmentManager, R.id.container)
+            strategy.navigate(supportFragmentManager)
         }
 
         viewModel.init(savedInstanceState == null)
