@@ -10,36 +10,22 @@ import andrewafony.factsaboutnumbers.com.numbers.data.cache.NumberDataToCache
 import andrewafony.factsaboutnumbers.com.numbers.data.cache.NumbersCacheDataSource
 import andrewafony.factsaboutnumbers.com.numbers.data.cloud.NumbersCloudDataSource
 import andrewafony.factsaboutnumbers.com.numbers.data.cloud.NumbersService
-import andrewafony.factsaboutnumbers.com.numbers.domain.HandleError
-import andrewafony.factsaboutnumbers.com.numbers.domain.HandleRequest
-import andrewafony.factsaboutnumbers.com.numbers.domain.NumberUiMapper
-import andrewafony.factsaboutnumbers.com.numbers.domain.NumbersInteractor
+import andrewafony.factsaboutnumbers.com.numbers.domain.*
 import andrewafony.factsaboutnumbers.com.numbers.presentation.*
 
-class NumbersModule(private val core: Core): Module<NumbersViewModel.Base> {
+class NumbersModule(
+    private val core: Core,
+    private val provideRepository: ProvideNumbersRepository,
+) : Module<NumbersViewModel.Base> {
 
     override fun viewModel(): NumbersViewModel.Base {
+
+        val repository = provideRepository.provide()
 
         val communication = NumbersCommunications.Base(
             ProgressCommunication.Base(),
             NumbersStateCommunication.Base(),
             NumbersListCommunication.Base()
-        )
-
-        val cacheDataSource = NumbersCacheDataSource.Base(
-            dao = core.provideDatabase().dao(),
-            dataToCache = NumberDataToCache()
-        )
-
-        val repository = BaseNumbersRepository(
-            cloudDataSource = NumbersCloudDataSource.Base(core.service(NumbersService::class.java)),
-            cacheDataSource = cacheDataSource,
-            mapperToDomain = NumberDataToDomainMapper(),
-            handleDataRequest = HandleDataRequest.Base(
-                cacheDataSource = cacheDataSource,
-                mapperToDomain = NumberDataToDomainMapper(),
-                handleError = HandleDomainError()
-            )
         )
 
         return NumbersViewModel.Base(
@@ -58,5 +44,32 @@ class NumbersModule(private val core: Core): Module<NumbersViewModel.Base> {
                 )
             )
         )
+    }
+}
+
+interface ProvideNumbersRepository {
+
+    fun provide(): NumbersRepository
+
+    class Base(private val core: Core) : ProvideNumbersRepository {
+
+        override fun provide(): NumbersRepository {
+
+            val cacheDataSource = NumbersCacheDataSource.Base(
+                dao = core.provideDatabase().dao(),
+                dataToCache = NumberDataToCache()
+            )
+
+            return BaseNumbersRepository(
+                cloudDataSource = NumbersCloudDataSource.Base(core.service(NumbersService::class.java)),
+                cacheDataSource = cacheDataSource,
+                mapperToDomain = NumberDataToDomainMapper(),
+                handleDataRequest = HandleDataRequest.Base(
+                    cacheDataSource = cacheDataSource,
+                    mapperToDomain = NumberDataToDomainMapper(),
+                    handleError = HandleDomainError()
+                )
+            )
+        }
     }
 }

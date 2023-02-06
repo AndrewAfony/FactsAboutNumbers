@@ -63,4 +63,7 @@ dependencies {
 
     // fragment ktx
     implementation("androidx.fragment:fragment-ktx:1.5.5")
+
+    // Work Manager
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }

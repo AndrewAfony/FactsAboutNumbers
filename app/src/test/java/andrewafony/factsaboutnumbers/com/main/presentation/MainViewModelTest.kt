@@ -1,6 +1,7 @@
 package andrewafony.factsaboutnumbers.com.main.presentation
 
 import andrewafony.factsaboutnumbers.com.numbers.presentation.NumberUi
+import andrewafony.factsaboutnumbers.com.random.WorkManagerWrapper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import org.junit.Assert.*
@@ -12,12 +13,14 @@ class MainViewModelTest {
     private lateinit var navigationCommunication: TestNavigationCommunication
     private lateinit var detailsCommunication: TestDetailsCommunication
     private lateinit var viewModel: MainViewModel
+    private lateinit var workManager: TestWorkManager
 
     @Before
     fun setup() {
         navigationCommunication = TestNavigationCommunication()
         detailsCommunication = TestDetailsCommunication()
-        viewModel = MainViewModel(navigationCommunication, detailsCommunication)
+        workManager = TestWorkManager()
+        viewModel = MainViewModel(navigationCommunication, detailsCommunication, workManager)
     }
 
     @Test
@@ -29,9 +32,11 @@ class MainViewModelTest {
         assertTrue(navigationCommunication.strategy is NavigationStrategy.Replace)
         assertEquals(0, detailsCommunication.count)
         assertTrue(detailsCommunication.details.isBlank())
+        assertEquals(1, workManager.startCalledCount)
 
         viewModel.init(false)
         assertEquals(1, navigationCommunication.count)
+        assertEquals(1, workManager.startCalledCount)
     }
 
     @Test
@@ -46,6 +51,15 @@ class MainViewModelTest {
 
         assertEquals(1, detailsCommunication.count)
         assertEquals("9 \n\n fact about 9", detailsCommunication.details)
+    }
+}
+
+private class TestWorkManager: WorkManagerWrapper {
+
+    var startCalledCount = 0
+
+    override fun enqueue() {
+        startCalledCount++
     }
 }
 

@@ -3,18 +3,21 @@ package andrewafony.factsaboutnumbers.com.main.presentation
 import andrewafony.factsaboutnumbers.com.numbers.presentation.Communication
 import andrewafony.factsaboutnumbers.com.numbers.presentation.NumberUi
 import andrewafony.factsaboutnumbers.com.numbers.presentation.NumbersFragment
+import andrewafony.factsaboutnumbers.com.random.WorkManagerWrapper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 
 class MainViewModel(
     private val navigationCommunication: NavigationCommunication.Mutable,
-    private val detailsCommunication: DetailsCommunication
+    private val detailsCommunication: DetailsCommunication,
+    private val workManagerWrapper: WorkManagerWrapper
 ): ViewModel(), Init, Communication.Observe<NavigationStrategy>, ObserveDetails, ShowDetails {
 
     override fun init(isFirstRun: Boolean) {
         if (isFirstRun) {
             navigationCommunication.map(NavigationStrategy.Replace(Screen.Main))
+            workManagerWrapper.enqueue()
         }
     }
 

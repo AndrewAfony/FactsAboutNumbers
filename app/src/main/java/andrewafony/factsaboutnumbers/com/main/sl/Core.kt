@@ -7,9 +7,10 @@ import andrewafony.factsaboutnumbers.com.numbers.data.cache.NumbersDatabase
 import andrewafony.factsaboutnumbers.com.numbers.data.cloud.CloudModule
 import andrewafony.factsaboutnumbers.com.numbers.presentation.DispatchersList
 import andrewafony.factsaboutnumbers.com.numbers.presentation.ManageResources
+import andrewafony.factsaboutnumbers.com.random.WorkManagerWrapper
 import android.content.Context
 
-interface Core : CloudModule, ManageResources, CacheModule, ProvideNavigation, ProvideNumberDetails {
+interface Core : CloudModule, ManageResources, CacheModule, ProvideNavigation, ProvideNumberDetails, ProvideWorkManager {
 
     fun provideDispatchers(): DispatchersList
 
@@ -17,6 +18,8 @@ interface Core : CloudModule, ManageResources, CacheModule, ProvideNavigation, P
         private val provideInstances: ProvideInstances,
         context: Context
     ) : Core {
+
+        private val workManagerWrapper = WorkManagerWrapper.Base(context)
 
         private val numberDetails = NumberFactDetails.Base()
 
@@ -47,7 +50,14 @@ interface Core : CloudModule, ManageResources, CacheModule, ProvideNavigation, P
         override fun provideNavigation() = navigationCommunication
 
         override fun provide(): NumberFactDetails.Mutable = numberDetails
+
+        override fun provideWorkManager(): WorkManagerWrapper  = workManagerWrapper
     }
+}
+
+interface ProvideWorkManager {
+
+    fun provideWorkManager(): WorkManagerWrapper
 }
 
 interface ProvideNavigation {
