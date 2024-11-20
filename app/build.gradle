@@ -1,16 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
     namespace 'andrewafony.factsaboutnumbers.com'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "andrewafony.factsaboutnumbers.com"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -30,6 +31,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -39,6 +43,27 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-scalars:2.9.0"
+
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+
+    // Room
+    implementation("androidx.room:room-ktx:2.5.0")
+    kapt("androidx.room:room-compiler:2.5.0")
+    testImplementation("androidx.room:room-testing:2.5.0")
+
+    // fragment ktx
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
+
+    // Work Manager
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }
